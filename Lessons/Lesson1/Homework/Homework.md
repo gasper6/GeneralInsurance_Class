@@ -11,10 +11,10 @@ To complete the task answer following questions save your changes and commit to 
    **Answer:** Aby sme vedeli pracovať na vlastných úlohách a vedeli ich rýchlo syncnúť
 
 4. **Question:** What command is used for sending selected changes to local repository?  
-   **Answer:** ...
+   **Answer:** Clone
 
 5. **Question:** What command is used for publishing changes for others?  
-   **Answer:** ...
+   **Answer:** Sync
 
 6. **Question:** How can you compare forks and apply changes to other's fork?  
-   **Answer:** ...
+   **Answer:** Magic.
