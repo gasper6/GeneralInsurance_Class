@@ -2,13 +2,13 @@
 To complete the task answer following questions save your changes and commit to your fork. Create Pull request to main repository (one you forked from) to send this for check. You will earn one point for each meaningful answer plus one for sucessfull pull request.
 
 1. **Question:** What's the main difference between Life and General Insurance?  
-   **Answer:** ...
+   **Answer:** V životnom poistení nastáva poistná udalosť iba raz, v neživotnom viackrát.
 
 2. **Question:** What's your GitHub ID?  
-   **Answer:** ...
+   **Answer:** gasper6
 
 3. **Question:** Why do we use forks (besides eating)?  
-   **Answer:** ...
+   **Answer:** Aby sme vedeli pracovať na vlastných úlohách a vedeli ich rýchlo syncnúť
 
 4. **Question:** What command is used for sending selected changes to local repository?  
    **Answer:** ...
