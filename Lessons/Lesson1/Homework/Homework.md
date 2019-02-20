@@ -17,4 +17,5 @@ To complete the task answer following questions save your changes and commit to 
    **Answer:** Push, Commit
 
 6. **Question:** How can you compare forks and apply changes to other's fork?  
-   **Answer:** Magic.
+   **Answer:** Porovnanie: Hádam si to povieme nabudúce.
+               Zmeny forku iných: Samo to nejde, "You must be on a branch to make or propose changes to this file."
