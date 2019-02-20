@@ -5,16 +5,16 @@ To complete the task answer following questions save your changes and commit to 
    **Answer:** V životnom poistení nastáva poistná udalosť iba raz, v neživotnom viackrát.
 
 2. **Question:** What's your GitHub ID?  
-   **Answer:** gasper6
+   **Answer:** #47779263, username ```gasper6```
 
 3. **Question:** Why do we use forks (besides eating)?  
    **Answer:** Aby sme vedeli pracovať na vlastných úlohách a vedeli ich rýchlo syncnúť
 
 4. **Question:** What command is used for sending selected changes to local repository?  
-   **Answer:** Clone
+   **Answer:** Pull (Ale o tom sme si ešte nehovorili...)
 
 5. **Question:** What command is used for publishing changes for others?  
-   **Answer:** Sync
+   **Answer:** Push, Commit
 
 6. **Question:** How can you compare forks and apply changes to other's fork?  
    **Answer:** Magic.
