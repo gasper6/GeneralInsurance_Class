@@ -8,14 +8,14 @@ To complete the task answer following questions save your changes and commit to 
    **Answer:** #47779263, username ```gasper6```
 
 3. **Question:** Why do we use forks (besides eating)?  
-   **Answer:** Aby sme vedeli pracovať na vlastných úlohách a vedeli ich rýchlo syncnúť
+   **Answer:** Aby sme vedeli pracovať na vlastných úlohách, vedeli ich porovnať, pozerať ich vývoj a všeličo ďalšie.
 
 4. **Question:** What command is used for sending selected changes to local repository?  
-   **Answer:** Pull (Ale o tom sme si ešte nehovorili...)
+   **Answer:** Pull (Môžeme si o tom ešte pls nabudúce povedať?)
 
 5. **Question:** What command is used for publishing changes for others?  
    **Answer:** Push, Commit
 
 6. **Question:** How can you compare forks and apply changes to other's fork?  
-   **Answer:** Porovnanie: Hádam si to povieme nabudúce.
-               Zmeny forku iných: Samo to nejde, "You must be on a branch to make or propose changes to this file."
+   **Answer:** To get to the compare view, append /compare to your repository's path.
+               Cudzie forky meniť nemôžem, môžem ale použiť pull request..
