@@ -1,7 +1,7 @@
 # Pre tych co sa zucastnuju tohto kurzu na FMFI osobne
 
 ## Pozor na GIT
-1) Pouzivajte na Clone, vas vlastny disk ("E?") a nie C-cko
+1) Pouzivajte na Clone, vas vlastny disk ("H:") a nie C-cko
 2) Pouzivajte HTTPS a vzdy zadavajte heslo, kedze SSH nefunguje
 
 ## Pozor na aktivitu :)
