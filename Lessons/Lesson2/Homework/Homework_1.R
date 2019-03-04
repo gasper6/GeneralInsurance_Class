@@ -3,6 +3,20 @@
 # __Commit__ it to your repository into `Lessons/Lesson2/Homework`.
 
 ## Code
+library(dplyr)
+library(ggplot2)
+
+dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
+
+# Záporné a NA poistné nahradíme nulou
+
+dt_KPI$Premium[dt_KPI$Premium < 0] = 0
+# Nemám rád dplyr
+
+
+
+
+
 # 
 # 
 # 

@@ -12,6 +12,7 @@ library(dplyr)
 library(ggplot2)
 
 # load data
+setwd("D:\\GeneralInsurance_Class\\")
 dt_KPI_raw <- read.csv("./Data/lesson2_KPI.csv")
 ```
 
@@ -62,7 +63,9 @@ Which vaules are not allowed for specific columns? Let's have a look at individu
 > Hint: Be prepared to deal with continuous and categorical values as well
 
 ```{r}
-# your code
+dt_KPI_raw %>% filter(Premium >= 0)
+# Alebo aj:
+#dt_KPI_raw %>% filter(Premium >= 0 | Losses >= 0 | Expenses >= 0)
 ```
 
 
@@ -70,12 +73,21 @@ Which vaules are not allowed for specific columns? Let's have a look at individu
 
 #### Correction of defects 
 ##### What is the feasible way to repair missing values? (e.g we can use mean for continuous vars, what about categorical?)
+
+The easiest way is to omit these data. It is certainly feasible.
+
 ```{r}
-# your code
+dt_KPI_raw <- dt_KPI_raw %>% filter(
+  !is.na(Region) & !is.na(Unit) & !is.na(Segment) & 
+  !is.na(Business) & !is.na(Year)
+                                    )
 ```
 ##### What is the feasible way to repair values that don't make sense? (e.g Can we see negative Premium?)
+
+Again, we omit all stupid values
+
 ```{r}
-# your code
+dt_KPI_raw <- dt_KPI_raw %>% filter(Losses >= 0 & Expenses >= 0 & Premium >= 0)
 ```
 
 
@@ -95,12 +107,15 @@ dt_KPI_raw %>%
 
 ##### Which Unit has the lowest Expenses? 
 ```{r}
-# your code
+dt_KPI_raw %>% 
+  group_by(Unit) %>% 
+  summarize(Expenses = sum(Premium, na.rm = TRUE)) %>% 
+  arrange(Expenses)
 ```
 
 ##### Which Business from Unit found in the previous task had the highest Expenses? 
 ```{r}
-# your code
+# Toto by sme si mohli ukázať, netuším ako sa to dá urobiť v dplayeri
 ```
 
 ### Basic Visualization
@@ -119,12 +134,25 @@ dt_KPI_raw %>%
 
 ##### Which Unit has the lowest Expenses? 
 ```{r}
-# your code
+dt_KPI_raw %>% 
+  group_by(Unit) %>% 
+  summarize(Premium = sum(Premium, na.rm = TRUE),
+            Expenses = sum(Expenses, na.rm = TRUE),
+            Losses = sum(Losses, na.rm = TRUE)
+  ) %>% 
+  ggplot(aes(x = reorder(Unit, Expenses), y = Expenses)) + 
+  geom_col()
 ```
 
 ##### Which Business from Unit found in the previous task had the highest Expenses? 
 ```{r}
-# your code
+dt_KPI_raw %>%
+  filter(Unit == "Unit5" & !is.na(Business)) %>%
+  group_by(Business) %>% 
+  summarise(Expenses = sum(Expenses, na.rm = TRUE)) %>% 
+  arrange(desc(Expenses)) %>%
+  ggplot(aes(x = reorder(Business, Expenses), y = Expenses)) + 
+  geom_col()
 ```
 
 ##### Bonus - Show all Costs Insurance Company has as a stacked bar for Expenses and Losses grouped by Units

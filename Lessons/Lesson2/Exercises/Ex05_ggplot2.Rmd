@@ -12,7 +12,8 @@ library(ggplot2)
 > Load data if you have not done so yet:
 
 ```{r}
-dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
+setwd("D:\\GeneralInsurance_Class\\")
+dt_KPI <- read.csv(".\\Data\\lesson2_KPI.csv")
 ```
 
 
