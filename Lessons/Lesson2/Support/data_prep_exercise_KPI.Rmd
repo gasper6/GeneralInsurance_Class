@@ -95,7 +95,7 @@ dt_KPI_raw %>%
 dt_KPI_raw %>% 
   group_by(Unit) %>% 
   summarize(Expenses = sum(Expenses, na.rm = TRUE)) %>% 
-  arrange(Expenses)
+  arrange(Expenses) 
 ```
 
 Lowest expenses had Unit 5.
