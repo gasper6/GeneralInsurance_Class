@@ -1,15 +1,29 @@
+---
+title: "Data preparation for lesson 2 (KPI's, searching for bad looking portfolios)"
+output: 
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
 Data preparation for lesson 2 (KPI's, searching for bad looking portfolios)
 ================
 
 In the lesson theory we learned what is underwriting result. Now we will have a look at the same data as we did earlier and will explore the portfolios and how well they did in terms of underwriting result.
 
-``` r
+```{r}
 # load libraries
 library(dplyr)
 library(ggplot2)
 
 # load data
 dt_KPI_raw <- read.csv("./Data/lesson2_KPI.csv")
+
+data <- dt_KPI_raw %>% filter_all(all_vars(!is.na(.)))
+data$Losses   <- abs(data$Losses)
+data$Expenses <- abs(data$Expenses)
+data$Premium  <- abs(data$Premium)
 ```
 
 ------------------------------------------------------------------------
@@ -22,14 +36,18 @@ dt_KPI_raw <- read.csv("./Data/lesson2_KPI.csv")
 
 ##### How could be relative performance in terms of losses defined?
 
-``` r
-# your code
-```
+Vypočítame Loss ratio $\frac L P$, Expenses ratio $\frac E P$ a combined ratio $\frac{L+E}{P}$.
+
 
 ##### How would you calculate underwriting result of the business units in the data?
 
-``` r
-# your code
+```{r}
+data %>%
+    group_by(Business) %>%
+    summarise(Expenses = sum(Expenses, na.rm=T),
+               Losses = sum(Losses, na.rm=T),
+               Premium = sum(Premium, na.rm=T)) %>%
+    mutate(Losses/Premium, Expenses/Premium, (Losses+Expenses)/Premium)
 ```
 
 ##### Which unit looks good and which looks bad in terms of underwriting result?
