@@ -25,6 +25,7 @@ shinyServer(function(input, output) {
     data$LossRatio <- data$Losses / data$Premium
     data$ExpRatio  <- data$Expenses / data$Premium
     data$ComRatio  <- data$LossRatio + data$ExpRatio
+    data
   })
   
   output$value <- renderPrint({ input$select })
