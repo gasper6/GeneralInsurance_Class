@@ -1,6 +1,6 @@
 ---
 title: "Data preparation for lesson 2 (KPI's, searching for bad looking portfolios)"
-output: 
+output: html_notebook
 ---
 
 ```{r setup, include=FALSE}
@@ -18,6 +18,7 @@ library(dplyr)
 library(ggplot2)
 
 # load data
+setwd("D:\\GeneralInsurance_Class")
 dt_KPI_raw <- read.csv("./Data/lesson2_KPI.csv")
 
 data <- dt_KPI_raw %>% filter_all(all_vars(!is.na(.)))
