@@ -42,9 +42,9 @@ shinyServer(function(input, output) {
    # print(color)
     
     ggplot(data = dt,
-          mapping = aes(x = LossRatio, y = ExpRatio, colour = color)) +
-       geom_point() #+
-       #geom_smooth()
+          mapping = aes(x = Premium, y = Expenses, colour = color)) +
+       geom_point() +
+       geom_smooth()
       })
 })
 
