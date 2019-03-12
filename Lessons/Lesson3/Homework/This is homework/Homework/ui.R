@@ -11,15 +11,20 @@ shinyUI(fluidPage(
   # Application title
   titlePanel("Domáca úloha"),
   
-  selectInput("select", label = h3("Vyber kategóriu"), 
-              choices = list("Region" = 1, "Unit" = 2,
-                             "Segment" = 3, "Business" = 4,
-                             "Year" = 5), 
-              selected = 1),
+                
+    sidebarPanel(
+      selectInput("select", label = h3("Vyber kategóriu"), 
+                  choices = list("Region" = "Region", "Unit" = "Unit",
+                                 "Segment" = "Segment", "Business" = "Business",
+                                 "Year" = "Year"), 
+                  selected = 1)
+    ),
+    
+    mainPanel(plotOutput("plot")),
   
-  hr(),
-  fluidRow(column(3, verbatimTextOutput("value"))),
-  hr(),
-  mainPanel(plotOutput("plot"))
+    hr(),
+    fluidRow(column(3, verbatimTextOutput("value"))),
+    hr()
+  
   
 ))

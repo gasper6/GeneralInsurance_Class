@@ -11,29 +11,39 @@ library(shiny)
 library(ggplot2)
 library(dplyr)
 
+setwd("D:\\GeneralInsurance_Class")
+dt <- read.csv("./Data/lesson2_KPI.csv")
+
+dt <- na.omit(dt)
+dt <- dt[-(dt$Losses)  < 0,]
+dt <- dt[-(dt$Expenses)< 0,]
+dt <- dt[-(dt$Premium) < 0,]
+dt$LossRatio <- dt$Losses / dt$Premium
+dt$ExpRatio  <- dt$Expenses / dt$Premium
+dt$ComRatio  <- dt$LossRatio + dt$ExpRatio
 
 shinyServer(function(input, output) {
-  
-  data <- reactive({
-    setwd("D:\\GeneralInsurance_Class")
-    dt_KPI_raw <- read.csv("./Data/lesson2_KPI.csv")
-    
-    data <- na.omit(dt)
-    data <- data[-(data$Losses)  < 0,]
-    data <- data[-(data$Expenses)< 0,]
-    data <- data[-(data$Premium) < 0,]
-    data$LossRatio <- data$Losses / data$Premium
-    data$ExpRatio  <- data$Expenses / data$Premium
-    data$ComRatio  <- data$LossRatio + data$ExpRatio
-    data
-  })
-  
   output$value <- renderPrint({ input$select })
   
-#  output$plot <- renderPlot(plot(c(-1,0,1), c(1,0,1)))
   
-  output$plot <- renderPlot(ggplot(data = data(),
-                                    mapping = aes(x = Premium, y = Expenses, colour = Region)) +
-                               geom_point() +
-                               geom_smooth())
+  
+  output$plot <- renderPlot({
+    
+    # If it's stupid but it works, it ain't stupid.
+    switch (input$select,
+      "Region" = {color <- dt$Region},
+      "Unit"   = {color <- dt$Unit},
+      "Segment" = {color <- dt$Segment},
+      "Business" = {color <- dt$Business},
+      "Year" = {color <- dt$Year}
+    )
+    
+   # print(color)
+    
+    ggplot(data = dt,
+          mapping = aes(x = LossRatio, y = ExpRatio, colour = color)) +
+       geom_point() #+
+       #geom_smooth()
+      })
 })
+
