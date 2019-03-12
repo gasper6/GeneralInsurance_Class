@@ -37,6 +37,7 @@ shinyServer(function(input, output) {
       "Business" = {color <- dt$Business},
       "Year" = {color <- dt$Year}
     )
+
     
    # print(color)
     
