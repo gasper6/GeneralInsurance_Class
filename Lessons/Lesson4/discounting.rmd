@@ -1,6 +1,8 @@
 ---
 title: "Discounting"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
 ---
 
 ### Triangles in insurance
@@ -51,6 +53,7 @@ library(ChainLadder)
 ```
 Load data about KPIs
 ```{r}
+setwd("D:\\GeneralInsurance_Class")
 dt_KPI <- read.csv("./Data/lesson2_KPI.csv")
 dt_LatestView <- read.csv("./Data/lesson4_latestView.csv")
 dt_PaidCase <- read.csv("./Data/lesson4_PaidCase.csv")
@@ -63,7 +66,7 @@ To understand what it is doing run the example below (demo from ChainLadder libr
 ```{r}
 GenIns
 plot(GenIns)
-plot(GenIns, lattice=TRUE)
+plot(GenIns, lattice=T)
 ```
 
 _Think about some math, that could project the future for the "unfinished lines" (e.g. liner models?)_
@@ -80,9 +83,9 @@ _Now try to predict what happens with the linse using the chain ladder technique
 
 Your solution
 ```{r}
-
-
-
+?predict
+predict(chainladder(GenIns))
+plot(predict(chainladder(GenIns)))
 
 ```
 
@@ -103,34 +106,139 @@ create a variable => filter data and covert to triangle. then convert to cummula
 _STEP 1: Take paid data for House business and Small claim size_
 
 ```{r}
-Paid_HH_sml <- dt_PaidCase %>% filter(...) 
+summary(dt_PaidCase)
+Paid_HH_sml <- dt_PaidCase %>% filter(Business == "House" &
+                                        ClaimSize == "Small" &
+                                        dataset_type == "PAID") 
 ```
 
 _STEP 2: Now convert the standard table into a triangle_
 Hint: %>% as.triangle(...)
 
 ```{r}
-
+Paid_HH_sml <- Paid_HH_sml %>% as.triangle(origin="ay", dev="dy", value="SumOfamount")
 ```
 
 _STEP 3: Now start plotting things to see more information_
 
 ```{r}
-
+Paid_HH_sml
+plot(predict(chainladder(Paid_HH_sml)))
 ```
 
 _STEP 4: And get the aging factors and some other stat's out to see more details_
 Hint: ata(...)
 
 ```{r}
-
+ata(Paid_HH_sml)
 ```
+
+I think that vwtd carries also very important information
+```{r}
+plot(attr(temp, "vwtd"), type="b", pch=19, main="Estimate of age-to-age factors")
+plot(log(attr(temp, "vwtd")), type="b", pch=19, main="Log of estimate of age-to-age factors")
+abline(0,0)
+plot(cumprod(attr(temp, "vwtd")), type="b", pch=19, main="Estimate of cumulative losses")
+```
+
 
 _Now repeat for all types of buiness and sizes of claims. Compare the findings..._
 
 ```{r}
-
+# To find all types of what we cathegories we have here, we use table
+table(dt_PaidCase[,1:3])
 ```
+
+First, we filter all possibilities of data:
+```{r}
+dt1 <- dt_PaidCase %>% filter(Business == "House" &
+                           ClaimSize == "Small" &
+                           dataset_type == "PAID")
+
+dt2 <- dt_PaidCase %>% filter(Business == "3rd Party" &
+                           ClaimSize == "Small" &
+                           dataset_type == "PAID")
+
+dt3 <- dt_PaidCase %>% filter(Business == "House" &
+                           ClaimSize == "Large" &
+                           dataset_type == "PAID")
+
+dt4 <- dt_PaidCase %>% filter(Business == "3rd Party" &
+                           ClaimSize == "Large" &
+                           dataset_type == "PAID")
+
+dt5 <- dt_PaidCase %>% filter(Business == "House" &
+                           ClaimSize == "Small" &
+                           dataset_type == "CASE")
+
+dt6 <- dt_PaidCase %>% filter(Business == "3rd Party" &
+                           ClaimSize == "Small" &
+                           dataset_type == "CASE")
+
+dt7 <- dt_PaidCase %>% filter(Business == "House" &
+                          ClaimSize == "Large" &
+                          dataset_type == "CASE")
+
+dt8 <- dt_PaidCase %>% filter(Business == "3rd Party" &
+                           ClaimSize == "Large" &
+                           dataset_type == "CASE")
+```
+
+Now we create triangles for these data:
+```{r}
+t1 <- dt1 %>% as.triangle(origin="ay", dev="dy", value="SumOfamount")
+t2 <- dt2 %>% as.triangle(origin="ay", dev="dy", value="SumOfamount")
+t3 <- dt3 %>% as.triangle(origin="ay", dev="dy", value="SumOfamount")
+t4 <- dt4 %>% as.triangle(origin="ay", dev="dy", value="SumOfamount")
+t5 <- dt5 %>% as.triangle(origin="ay", dev="dy", value="SumOfamount")
+t6 <- dt6 %>% as.triangle(origin="ay", dev="dy", value="SumOfamount")
+t7 <- dt7 %>% as.triangle(origin="ay", dev="dy", value="SumOfamount")
+t8 <- dt8 %>% as.triangle(origin="ay", dev="dy", value="SumOfamount")
+```
+
+Now we calculate aging factors
+```{r}
+ata1 <- attr(ata(t1), "vwtd")
+ata2 <- attr(ata(t2), "vwtd")
+ata3 <- attr(ata(t3), "vwtd")
+ata4 <- attr(ata(t4), "vwtd")
+ata5 <- attr(ata(t5), "vwtd")
+ata6 <- attr(ata(t6), "vwtd")
+ata7 <- attr(ata(t7), "vwtd")
+ata8 <- attr(ata(t8), "vwtd")
+```
+
+Create dataframe to easier plot using ggplot
+```{r}
+df <- t(data.frame(ata1, ata2, ata3, ata4, ata5, ata6, ata7, ata8))
+row.names(df) <- c("House, Small, Paid", "3rd, Small, Paid", "House, Large, Paid", "3rd, Large, Paid", "House, Small, Case", "3rd, Small, Case", "House, Large, Case", "3rd, Large, Case")
+```
+
+
+```{r}
+library(reshape2)
+plot_data <- melt(df)
+
+ggplot(plot_data, aes(x=Var2, y=value)) + scale_color_brewer(palette = "Dark2") + geom_point(aes(col=Var1)) + geom_line(aes(group=Var1, col=Var1)) + labs(title="Relative change of annual expenses by cathegories", y="Relative change", x="")
+```
+
+I hope this is the most beautiful plot you will ever see in these homeworks.
+
+Môžeme si všimnúť, že 3rd, Large, Paid má v prechode z prvého roka na druhý ďaleko najvyššiu hodnotu. Možno sa oplatí pozrieť sa na tieto dáta bližšie.
+```{r}
+#ggplot(melt(t4), aes(x=ay, y=value)) + geom_point(aes(col=dy)) + geom_line(aes(col=dy, group=dy))
+plot(t4)
+t4
+```
+
+Keďže y-vá os je veľmi veľká, pozrieme sa iba na rád relatívneho prírastku. (Naozaj by nás to malo zaujímať a má to čo povedať.)
+```{r}
+plot(diff(log10(t4)))
+```
+
+Vidíme, že výdavky v tomto sektore môžu z prvého roka na druhý spokojne vzrásť alebo klesnúť aj o jeden rád. Taktiež vidíme, že môže trvať až šesť rokov, kým sa prípady uzavrú a výdavky pokryjú.
+
+Dajú sa vidieť aj iné zaujímavé veci - napríklad, že House, Small, Case môže aj po deviatich rokoch prudko vyskočiť. Alebo že House, Case majú pre veľkú aj malú škodu dlhé chvosty. Dlhé chvosty môžeme nájsť aj v 3rd Small Case. Keďže úloha mala byť na okolo pol hodinu, no robím ju už vyše hodinu a pol, nejdem tieto objavy viac rozoberať a komentovať.
 
 _If you are now comforatble with what this does, try doing the same, but using additional information: The Case data!_
 Hint: Sum Paid and Case together to come up with the final claims estimates (the Incurred claims)
@@ -145,6 +253,7 @@ In insurance this means how fast is the data fully developed. The age-to-age fac
 
 So hopefully by this time you know how the losses were calculated for you to use in previous class...
 
+Myslím, že toto som už komentoval vyššie.
 
 #### Exercise 3
 There are a couple of different types of business in the data from previous lesson. 
