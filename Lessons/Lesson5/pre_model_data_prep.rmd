@@ -20,16 +20,18 @@ So let's find out the way how to join them together.
 Policy data are at *policy + object* level.
 ```{r}
 library(dplyr)
+setwd("D:\\GeneralInsurance_CLass")
 dt_Policy <- read.csv("./Data/lesson5_PolicyHistory.csv") %>% distinct(NrPolicy, NrObject, .keep_all = TRUE) 
 dt_Policy %>% nrow()
-dt_Policy %>% distinct(NrPolicy, NrObject) %>% nrow() 
+dt_Policy %>% distinct(NrPolicy, NrObject) %>% nrow
 ```
 
 Claims data are at *claims* level. 
 ```{r}
+setwd("D:\\GeneralInsurance_CLass")
 dt_Claims <- read.csv("./Data/lesson5_Claims.csv") %>% distinct(NrClaim, .keep_all = TRUE)
 dt_Claims %>% nrow()
-dt_Claims %>% distinct(NrClaim) %>% nrow()
+dt_Claims %>% distinct(NrClaim) %>% nrow
 ```
 
 To properly bring the claims info on `policy + object` level we need to ensure claims data are also on that level. Lets check it and if they are not, roll them up to that level. 

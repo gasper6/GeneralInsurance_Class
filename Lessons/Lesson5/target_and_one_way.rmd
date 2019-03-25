@@ -116,6 +116,10 @@ For the first one-way analysis we will try to explore feature about vehicle type
 ```{r}
 library(ggplot2)
 dt_pol_w_claims %>% 
+  ggplot(aes(y = log10(Burning_Cost), x = Veh_type2)) + 
+  geom_jitter()
+
+dt_pol_w_claims %>% 
   ggplot(aes(y = Burning_Cost, x = Veh_type2)) + 
   geom_jitter()
 ```
@@ -137,7 +141,7 @@ Why we choose those three metrics? And do you see the story behind them?
 ```{r}
 dt_pol_w_claims %>% 
   ggplot(aes(y = Burning_Cost, x = Veh_type2)) + 
-  geom_boxplot() +
+  geom_boxplot() + geom_jitter() +
   ylim(0, 100)
 ```
 
