@@ -62,6 +62,7 @@ modelHW1 <- glm(data = dt_pol_w_claims %>% filter(Burning_Cost != 0, Burning_Cos
               formula = Burning_Cost ~ BonusMalus,
               family = Gamma())
 summary(modelHW1)
+ggplot(data=dt_pol_w_claims, aes(x=BonusMalus, y=Burning_Cost)) + geom_point()# + stat_smooth(method = "glm", method.args=list(family=Gamma()))
 ```
 
 
@@ -73,7 +74,6 @@ modelHW2 <- glm(data = dt_pol_w_claims %>% filter(Burning_Cost != 0, Burning_Cos
               formula = Burning_Cost ~ Veh_type1,
               family = Gamma())
 summary(modelHW2)
-ggplotRegression(modelHW2)
 ```
 
 Pozorujeme aj model s inou informáciou o type vozidla. Pri vozidlách typu type1commercial car <3100 kg, type1commercial car <3500 kg a type1private car je najvyššia štatistická významnosť, teda pre zákazníkov ktorí chcú poistiť tieto typy vozidiel budeme mať pomerne dobrú informáciu o tom, aký bude ich burning cost.
