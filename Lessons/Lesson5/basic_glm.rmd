@@ -14,9 +14,10 @@ Before we jump directly to modelling, we need to decide on which type of GLM mod
 The first step in decision-making could be to draw a distribution of our Target.
 
 ```{r}
+library(dplyr)
 library(ggplot2)
 ggplot(data = dt_pol_w_claims,
-                aes(x = Burning_Cost))) +
+                aes(x = Burning_Cost)) +
 geom_histogram(binwidth = 50)
 ```
 It does not look to be very usefull as there is a lot of clients that don't have any claim. Let's remove them, and we can remove outliers as well.
@@ -34,7 +35,8 @@ To make a proper decision we would run some statistical test on matching distrib
 
 
 So lets try `Gamma` as a first attempt.
-### First Model
+
+### Models
 ```{r}
 model1 <- glm(data = dt_pol_w_claims %>% filter(Burning_Cost != 0, Burning_Cost < 100),
               formula = Burning_Cost ~ Veh_type2,
@@ -46,4 +48,40 @@ We use gamma for discrete variables and poisson for numeric data.
 ```{r}
 summary(model1)
 ```
+
+## Homework
+```{r}
+library(MASS)
+library(dplyr)
+```
+
+Pozrime sa na Bonus-Malus. Pre potešenie pridám aj milý obrázok.
+
+```{r}
+modelHW1 <- glm(data = dt_pol_w_claims %>% filter(Burning_Cost != 0, Burning_Cost < 100),
+              formula = Burning_Cost ~ BonusMalus,
+              family = Gamma())
+summary(modelHW1)
+```
+
+
+
+Bonus-Malus celkom dobre popisuje burningch, cost. Čím je bonus-malus väčší, tým menší je burning cost. Bonus-malus je štatisticky významnou premennou a teda vieme robiť dosť dobré predikcie, ak by sme ho poznali. Pre nových zákazníkov to môže byť problém, ale pre tých, ktorých už niekoľko rokov poznáme (a teda vieme aký je ich bonus-malus), vieme povedať 
+
+```{r}
+modelHW2 <- glm(data = dt_pol_w_claims %>% filter(Burning_Cost != 0, Burning_Cost < 100),
+              formula = Burning_Cost ~ Veh_type1,
+              family = Gamma())
+summary(modelHW2)
+ggplotRegression(modelHW2)
+```
+
+Pozorujeme aj model s inou informáciou o type vozidla. Pri vozidlách typu type1commercial car <3100 kg, type1commercial car <3500 kg a type1private car je najvyššia štatistická významnosť, teda pre zákazníkov ktorí chcú poistiť tieto typy vozidiel budeme mať pomerne dobrú informáciu o tom, aký bude ich burning cost.
+
+
+
+
+
+
+
 
