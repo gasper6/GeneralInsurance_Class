@@ -1,0 +1,108 @@
+---
+title: "Homework"
+author: "Ján Gašper"
+date: "1 apríla 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Dáta ```dt_pol_w_claims``` už mám načítané. Ideme rozdeliť dáta na tréningové a validačné. Validačných dát bude $q=5\%$.
+Budeme sa zaoberať iba dátami pre súkromné autá, ktoré sú poistené na nenulovú sumu. Ideme skúsiť predikovať, či bude mať daný zákazník nulový burning cost, alebo nie.
+
+```{r}
+setwd("D:/GeneralInsurance_Class")
+dt_pol_w_claims <- readRDS("Data/dt_pol_w_claims.rds")
+dt_homework <- dt_pol_w_claims[dt_pol_w_claims$Veh_type1 == "private car",]
+na.omit(dt_homework)
+dt_homework$NoBurn <- dt_homework$Burning_Cost <= 0
+dt_homework <- dt_homework[dt_homework$Sum_insured > 0,]
+n <- nrow(dt_homework)
+set.seed(123456)
+q <- .05
+rnd <- runif(n)
+dt_train <- dt_homework[rnd>q,]
+dt_valid <- dt_homework[rnd<=q,]
+```
+
+D_age_banded
+
+```{r}
+library(ggplot2)
+ggplot(data=dt_train, aes(x=log10(dt_train$Sum_insured), y=NoBurn)) + geom_point() + geom_jitter()
+```
+
+Vyzerá, že najviac tých, čo majú nenulový burning cost majú poistnú sumu okolo $10^4$. Stále je to však dosť málo.
+
+
+Skúšal si urobiť vlastný model, kde pravdepodobnosť nulového burning costu budem modelovať ako
+$$
+\Pr(BC =0) = \frac{p}{1+e^{-a_0 - a_1x}} + \frac{r}{1+e^{-b_0 - b_1x}}
+$$
+kde $x$ je desiatkový logaritmus poistenej sumy. Tento postup ale zlyhal. Nájsť minimum tak plochej funkcie r-ko nezvládne.
+
+
+Skúšam iný vlastný model. Pravdepodobnosť toho, že niekto bude mať nenulový burning cost budem modelovať z tréningových dát. Idme na to takto: Povedzme, že si niekto chce poistiť auto na sumu $1000$, čo je štvorciferné číslo. Pozrieme sa na to, koľko ľudí, ktorí sa poistili na sumu rádu $4 - b$ až $4 + b$ a aký podiel z nich nenulový burning cost. Tento podiel bude náš ohdad pravdepodobnosti. (Z matematického hľadiska ide o podiel dvoch konvolúcií s binárnou funkciou. Možno by bolo zaujímavé pozrieť sa, keby sme použili iné ako binárne jadro. Ale to za... ehm... hodinu na domácu úlohu... ehm... nestihnem. Aj tá funkcia ```f``` by sa dala urobiť vektorovo, ale meh...)
+
+```{r}
+f <- function(x, bw=.25){
+  (sum(dt_train[dt_train$Sum_insured < 10^(x-bw),]$NoBurn) - sum(dt_train[dt_train$Sum_insured < 10^(x+bw),]$NoBurn)) / ((nrow(dt_train[dt_train$Sum_insured < 10^(x-bw),])) - (nrow(dt_train[dt_train$Sum_insured < 10^(x+bw),])))
+}
+x <- seq(0, 6, by=.05)
+y <- x
+for (i in 1:length(x)){
+  y[i] <- f(x[i])
+}
+
+plot(x,y, "l", lwd=2, xlab="Počet cifier poistenej sumy", ylab="Pr(BC = 0)")
+```
+
+
+Poďme otestovať náš model napríklad v $L_1$ norme na validačných dátach:
+(Pozor, bude to trvať dlho, ozaj som to nestihol nakódiť dobre.)
+```{r}
+S <- 0
+for (i in 1:nrow(dt_valid)){
+  temp <- f(log10(dt_valid$Sum_insured[i]))
+  if (!is.nan(temp)){
+    S <- S + abs(dt_valid$NoBurn[i] - temp)
+  }
+}
+S
+
+```
+Dostali sme číslo $145,6279$. Toto číslo bude miera nekvality nášho modelu - čím bude nižšia, tým lepší model máme.
+
+
+Skúsme sa teraz pozrieť na "úbohý model" - budeme považovať pravdepodobnosť že burning cost je rovný nule za nezávislú od poistnej sumy (teda konštantnú). Odhadneme napríklad pomocou maxima vierohodnosti v $L_2$ norme. Využijeme poznatky z ekonometrie a uvedomíme si, že odhad bude vlastne priemer. Pozrieme sa, čo sa deje s odchýlkou:
+
+```{r}
+S <- sum(abs(dt_valid$NoBurn - mean(dt_train$NoBurn)))
+S
+```
+
+Náš model je asi nafigu, pretože naša metrika ukazuje veľmi podobné číslo. Pre iný výber validačných dát by možno vyšla odchýlka aj väčšia.
+
+
+Dobre, viac som toho nestihol.
+Ale išiel by som modelovať pre tých, čo majú nenulový burning cost na základe viacerých faktorov. Napríklad by som urbobil novú premennú, ktorá by bola rôzna pre každý typ zákazníka a každý vek. Zlúčil by som vekovú skupinu od 80 rokov nahor. Taktiež skupina <25 rokov by sa dala zlepiť s vými čo majú menej ako 30 rokov. Pre každú skupinu by sa dala robiť regresia zvlášť a hádam by sme na niečo prišli.
+
+```{r}
+"počty poistiek pre jednotlivé typy zákazníkov a vek"
+table(dt_train[,c("D_age_banded", "Customer_Type")])
+```
+
+Toto by bolo treba nejako spraviť: dať tam novú premennú pre kartézky súčin vekových kategórii a typu zákazníka, pridať ďalšie premenné, otestovať štatistickú významnosť parametrov a pozrieť sa čo na to validačné dáta.
+
+```{r}
+HWModel2 <- glm(data=dt_train[dt_train$Burning_Cost>0,], formula = Burning_Cost ~ 1 + D_age_banded + Customer_Type, family=Gamma())
+
+summary(HWModel2)
+```
+
+
+
+
+
